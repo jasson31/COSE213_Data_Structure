@@ -1,6 +1,12 @@
 #include <stdio.h>
 #include <windows.h>
 #define MAX_SIZE 50
+#define MALLOC(p, s) \
+	if (!((p) = malloc(s))) { \
+		fprintf(stderr, "Insufficient memory"); \
+		exit(EXIT_FAILURE); \
+	}
+
 typedef enum {head, entry} tagfield;
 typedef struct matrixNode* matrixPointer;
 typedef struct entryNode {
@@ -25,8 +31,9 @@ matrixPointer matrices[MAX_SIZE];
 int matrixCounter = 0;
 
 matrixPointer newNode() {
-	matrixPointer node = (matrixPointer)malloc(sizeof(matrixPointer));
-	return node;
+	matrixPointer pointer = NULL;
+	MALLOC(pointer, sizeof(*pointer));
+	return pointer;
 }
 
 void mread() {
@@ -40,7 +47,6 @@ void mread() {
 
 	if (numHeads > MAX_SIZE) {
 		printf("Input matrix size exceeds the max size of matrix.\n");
-		Sleep(1000);
 		return;
 	}
 	
@@ -90,16 +96,28 @@ void mread() {
 			hdnode[numHeads - 1]->u.next = node;
 			node->right = hdnode[0];
 		}
-		if(matrixCounter <= MAX_SIZE)
-			matrices[matrixCounter++] = node;
+		if (matrixCounter <= MAX_SIZE) {
+			matrices[matrixCounter] = node;
+			printf("Matrix added to %d.\n", matrixCounter++);
+		}
 		else {
-			fprintf(stderr, "asdf");
+			printf("There are too many matrices.\n");
 			return;
 		}
 	}
 }
-void mwrite() {
+void mwrite(matrixPointer node) {
+	int i;
+	matrixPointer temp, head = node->right;
 
+	printf("\n numRows = %d, numCols = %d\n", node->u.entry.row, node->u.entry.col);
+	printf(" The matrix by row, column, and value : \n\n");
+	for (i = 0; i < node->u.entry.row; i++) {
+
+		for (temp = head->right; temp != head; temp = temp->right)
+			printf("%5d%5d%5d \n", temp->u.entry.row, temp->u.entry.col, temp->u.entry.value);
+		head = head->u.next;
+	}
 }
 void merase() {
 
@@ -116,9 +134,9 @@ void mtranspose() {
 
 int main(void) {
 	int menu;
+	int input;
 	while (1) {
-		system();
-		printf("Type menu\n");
+		system("cls");
 		printf("%d : Read in a sparse matrix.\n", 1);
 		printf("%d : Write out a sparse matrix.\n", 2);
 		printf("%d : Erase a sparse matrix.\n", 3);
@@ -126,13 +144,17 @@ int main(void) {
 		printf("%d : Multiply two sparse matrix.\n", 5);
 		printf("%d : Transpose a sparse matrix.\n", 6);
 		printf("%d : Exit the program.\n", 7);
+		printf("Type menu : ");
 		scanf("%d", &menu);
+		system("cls");
 		switch (menu) {
 		case 1:
 			mread();
 			break;
 		case 2:
-			mwrite();
+			printf("Type the number of matrix you want to print : ");
+			scanf("%d", &input);
+			mwrite(matrices[input]);
 			break;
 		case 3:
 			merase();
@@ -150,6 +172,8 @@ int main(void) {
 			return 0;
 			break;
 		}
+		printf("\nPress any key to proceed.");
+		getch();
 	}
 	return 0;
 }
