@@ -88,14 +88,13 @@ void mread(int pos) {
 		}
 		last->right = hdnode[currentRow];
 
-		for (i = 0; i < numCols; i++) {
+		for (i = 0; i < numCols; i++)
 			hdnode[i]->u.next->down = hdnode[i];
 
-			for (i = 0; i < numHeads - 1; i++)
-				hdnode[i]->u.next = hdnode[i + 1];
-			hdnode[numHeads - 1]->u.next = node;
-			node->right = hdnode[0];
-		}
+		for (i = 0; i < numHeads - 1; i++)
+			hdnode[i]->u.next = hdnode[i + 1];
+		hdnode[numHeads - 1]->u.next = node;
+		node->right = hdnode[0];
 
 		matrixCounter++;
 		matrices[pos] = node;
@@ -304,14 +303,13 @@ void madd(matrixPointer a, matrixPointer b, int pos) {
 		}
 	}
 
-	for (i = 0; i < numCols; i++) {
+	for (i = 0; i < numCols; i++)
 		hdnode[i]->u.next->down = hdnode[i];
 
-		for (i = 0; i < numHeads - 1; i++)
-			hdnode[i]->u.next = hdnode[i + 1];
-		hdnode[numHeads - 1]->u.next = node;
-		node->right = hdnode[0];
-	}
+	for (i = 0; i < numHeads - 1; i++)
+		hdnode[i]->u.next = hdnode[i + 1];
+	hdnode[numHeads - 1]->u.next = node;
+	node->right = hdnode[0];
 
 	matrixCounter++;
 	matrices[pos] = node;
@@ -323,10 +321,145 @@ void mmult(matrixPointer a, matrixPointer b, int pos) {
 		return;
 	}
 
+	int numRows, numCols, numHeads, i;
+	int row, col, value, currentRow;
+	matrixPointer temp, last, node;
+	matrixPointer firstHead = a->right, secondHead = b->right;
+	matrixPointer firstTemp, secondTemp;
+
+	node = newNode();
+	node->tag = entry;
+	numRows = a->u.entry.row;
+	numCols = b->u.entry.col;
+	node->u.entry.row = numRows;
+	node->u.entry.col = numCols;
+	numHeads = (numRows > numCols) ? numRows : numCols;
+
+	for (i = 0; i < numHeads; i++) {
+		temp = newNode();
+		hdnode[i] = temp;
+		hdnode[i]->tag = head;
+		hdnode[i]->right = temp;
+		hdnode[i]->u.next = temp;
+	}
+	currentRow = 0;
+	last = hdnode[0];
+	firstTemp = firstHead->right;
+	secondTemp = secondHead->right;
+	for (int j = 0; j < numRows; j++) {
+		last = hdnode[j];
+		if (firstTemp->tag == head)
+			firstTemp = firstHead->right;
+		if (secondTemp->tag == head)
+			secondTemp = secondHead->down;
+		for (i = 0; i < numCols; i++) {
+			value = 0;
+			while (firstTemp != firstHead && secondTemp != secondHead) {
+				if (firstTemp->u.entry.col == secondTemp->u.entry.row) {
+					value += (firstTemp->u.entry.value * secondTemp->u.entry.value);
+					row = firstTemp->u.entry.row;
+					col = secondTemp->u.entry.col;
+					firstTemp = firstTemp->right;
+					secondTemp = secondTemp->down;
+				}
+				else if (firstTemp->u.entry.col < secondTemp->u.entry.row)
+					firstTemp = firstTemp->right;
+				else if (firstTemp->u.entry.col > secondTemp->u.entry.row)
+					secondTemp = secondTemp->down;
+			}
+			if (value) {
+				temp = newNode();
+				temp->tag = entry;
+				temp->u.entry.row = row;
+				temp->u.entry.col = col;
+				temp->u.entry.value = value;
+				last->right = temp;
+				last = temp;
+				hdnode[col]->u.next->down = temp;
+				hdnode[col]->u.next = temp;
+				last->right = hdnode[row];
+			}
+			firstTemp = firstHead->right;
+			secondHead = secondHead->u.next;
+			secondTemp = secondHead->down;
+		}
+		firstHead = firstHead->u.next;
+		secondHead = b->right;
+		firstTemp = firstHead->right;
+		secondTemp = secondHead->down;
+
+		last->right = hdnode[row];
+	}
+
+	for (i = 0; i < numCols; i++)
+		hdnode[i]->u.next->down = hdnode[i];
+
+	for (i = 0; i < numHeads - 1; i++)
+		hdnode[i]->u.next = hdnode[i + 1];
+	hdnode[numHeads - 1]->u.next = node;
+	node->right = hdnode[0];
+
+	matrixCounter++;
+	matrices[pos] = node;
+	printf("Result matrix added to %d.\n", pos);
 
 }
-void mtranspose() {
+void mtranspose(matrixPointer a, int pos) {
 
+	int numRows, numCols, numHeads, i;
+	int row, col, value;
+	matrixPointer temp, last, node;
+	matrixPointer originalHead = a->right;
+	matrixPointer originalTemp;
+
+	node = newNode();
+	node->tag = entry;
+	numRows = a->u.entry.col;
+	numCols = a->u.entry.row;
+	node->u.entry.row = numRows;
+	node->u.entry.col = numCols;
+	numHeads = (numRows > numCols) ? numRows : numCols;
+
+	for (i = 0; i < numHeads; i++) {
+		temp = newNode();
+		hdnode[i] = temp;
+		hdnode[i]->tag = head;
+		hdnode[i]->right = temp;
+		hdnode[i]->u.next = temp;
+	}
+	last = hdnode[0];
+	for (int j = 0; j < numRows; j++) {
+		last = hdnode[j];
+		for (originalTemp = originalHead->down; originalTemp != originalHead; originalTemp = originalTemp->down) {
+
+			row = originalTemp->u.entry.col;
+			col = originalTemp->u.entry.row;
+			value = originalTemp->u.entry.value;
+			temp = newNode();
+			temp->tag = entry;
+			temp->u.entry.row = row;
+			temp->u.entry.col = col;
+			temp->u.entry.value = value;
+			last->right = temp;
+			last = temp;
+			hdnode[col]->u.next->down = temp;
+			hdnode[col]->u.next = temp;
+		}
+		originalHead = originalHead->u.next;
+		last->right = hdnode[j];
+	}
+
+	for (i = 0; i < numCols; i++)
+		hdnode[i]->u.next->down = hdnode[i];
+
+	for (i = 0; i < numHeads - 1; i++)
+		hdnode[i]->u.next = hdnode[i + 1];
+	hdnode[numHeads - 1]->u.next = node;
+	node->right = hdnode[0];
+
+	matrixCounter++;
+	matrices[pos] = node;
+	printf("Result matrix added to %d.\n", pos);
 }
 
 int main(void) {
@@ -334,7 +467,7 @@ int main(void) {
 	int max, printCounter;
 	while (1) {
 		system("cls");
-		printf("************************************\n");
+		printf("\n************************************\n");
 		printf(" Existing matrices : ");
 		max = matrixCounter;
 		printCounter = 0;
@@ -368,12 +501,12 @@ int main(void) {
 			matrices[input1] != NULL ? printf("Matrix already exists at the position %d.\n", input1) : mread(input1);
 			break;
 		case 2:
-			printf("Type the number of matrix you want to print : ");
+			printf("Type the number of a matrix you want to print : ");
 			scanf("%d", &input1);
 			matrices[input1] == NULL ? printf("There is no matrix at that position.\n") : mwrite(matrices[input1]);
 			break;
 		case 3:
-			printf("Type the number of matrix you want to erase : ");
+			printf("Type the number of a matrix you want to erase : ");
 			scanf("%d", &input1);
 			matrices[input1] == NULL ? printf("There is no matrix at that position.\n") : merase(&matrices[input1]);
 			break;
@@ -392,7 +525,11 @@ int main(void) {
 			mmult(matrices[input1], matrices[input2], input3);
 			break;
 		case 6:
-			mtranspose();
+			printf("Type the number of a matrix you want to get transpose of : ");
+			scanf("%d", &input1);
+			printf("Type the number of position you want to save the result matrix : ");
+			scanf("%d", &input2);
+			mtranspose(matrices[input1], input2);
 			break;
 		case 7:
 			return 0;
