@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <windows.h>
-#define MAX_SIZE 50
+#define MAX_SIZE 2
 #define MALLOC(p, s) \
 	if (!((p) = malloc(s))) { \
 		fprintf(stderr, "Insufficient memory"); \
@@ -36,7 +36,7 @@ matrixPointer newNode() {
 	return pointer;
 }
 
-void mread() {
+void mread(int pos) {
 	int numRows, numCols, numTerms, numHeads, i;
 	int row, col, value, currentRow;
 	matrixPointer temp, last, node;
@@ -96,14 +96,10 @@ void mread() {
 			hdnode[numHeads - 1]->u.next = node;
 			node->right = hdnode[0];
 		}
-		if (matrixCounter <= MAX_SIZE) {
-			matrices[matrixCounter] = node;
-			printf("Matrix added to %d.\n", matrixCounter++);
-		}
-		else {
-			printf("There are too many matrices.\n");
-			return;
-		}
+
+
+		matrices[pos] = node;
+		printf("Matrix added to %d.\n", pos);
 	}
 }
 void mwrite(matrixPointer node) {
@@ -119,8 +115,31 @@ void mwrite(matrixPointer node) {
 		head = head->u.next;
 	}
 }
-void merase() {
+void merase(matrixPointer* node) {
+	matrixPointer x, y, head = (*node)->right;
+	int i, numHeads;
 
+	for (i = 0; i < (*node)->u.entry.row; i++) {
+		y = head->right;
+		while (y != head) {
+			x = y;
+			y = y->right;
+			free(x);
+		}
+		x = head;
+		head = head->u.next;
+		free(x);
+	}
+
+	y = head;
+	while (y != *node) {
+		x = y;
+		y = y->u.next;
+		free(x);
+	}
+	free(*node);
+	*node = NULL;
+	printf("Matrix erased.\n");
 }
 void madd() {
 
@@ -149,15 +168,23 @@ int main(void) {
 		system("cls");
 		switch (menu) {
 		case 1:
-			mread();
+			if (++matrixCounter > MAX_SIZE) {
+				printf("There are too many matrices.\n");
+				break;
+			}
+			printf("Type the number of position you want to save matrix : ");
+			scanf("%d", &input);
+			matrices[input] != NULL ? printf("Matrix already exists at the position %d.\n", input) : mread(input);
 			break;
 		case 2:
 			printf("Type the number of matrix you want to print : ");
 			scanf("%d", &input);
-			mwrite(matrices[input]);
+			matrices[input] == NULL ? printf("There is no matrix at that position.\n") : mwrite(matrices[input]);
 			break;
 		case 3:
-			merase();
+			printf("Type the number of matrix you want to erase : ");
+			scanf("%d", &input);
+			matrices[input] == NULL ? printf("There is no matrix at that position.\n") : merase(&matrices[input]);
 			break;
 		case 4:
 			madd();
