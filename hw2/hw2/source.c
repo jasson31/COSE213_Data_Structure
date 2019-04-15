@@ -52,7 +52,7 @@ void mread(int pos) {
 	
 	node = newNode();
 	node->tag = entry;
-	node->u.entry.row = numRows;
+	node->u.entry.row = numRows; 
 	node->u.entry.col = numCols;
 
 	if (!numHeads)
@@ -148,7 +148,7 @@ void madd(matrixPointer a, matrixPointer b, int pos) {
 	}
 
 	int numRows, numCols, numHeads, i;
-	int row, col, value, currentRow;
+	int row, col, value;
 	matrixPointer temp, last, node;
 	matrixPointer firstHead = a->right, secondHead = b->right;
 	matrixPointer firstTemp, secondTemp;
@@ -168,16 +168,14 @@ void madd(matrixPointer a, matrixPointer b, int pos) {
 		hdnode[i]->right = temp;
 		hdnode[i]->u.next = temp;
 	}
-	currentRow = 0;
 	last = hdnode[0];
 	firstTemp = firstHead->right;
 	secondTemp = secondHead->right;
-	while (firstHead != a && secondHead != b) {
-		if(firstTemp->tag == head)
-			firstTemp = firstHead->right;
-		if (secondTemp->tag == head)
-			secondTemp = secondHead->right;
-		if (firstTemp->u.entry.row < secondTemp->u.entry.row) {
+	for(i = 0; i < numRows; i++) {
+		firstTemp = firstHead->right;
+		secondTemp = secondHead->right;
+		if (firstTemp == firstHead && secondTemp == secondHead);
+		else if (secondTemp == secondHead) {
 			last = hdnode[firstTemp->u.entry.row];
 			for (; firstTemp != firstHead; firstTemp = firstTemp->right) {
 				row = firstTemp->u.entry.row;
@@ -195,7 +193,7 @@ void madd(matrixPointer a, matrixPointer b, int pos) {
 			}
 			last->right = hdnode[row];
 		}
-		else if (firstTemp->u.entry.row > secondTemp->u.entry.row) {
+		else if (firstTemp == firstHead) {
 			last = hdnode[secondTemp->u.entry.row];
 			for (; secondTemp != secondHead; secondTemp = secondTemp->right) {
 				row = secondTemp->u.entry.row;
@@ -263,45 +261,6 @@ void madd(matrixPointer a, matrixPointer b, int pos) {
 		firstHead = firstHead->u.next;
 		secondHead = secondHead->u.next;
 	}
-	if (firstHead != a) {
-
-		for (i = firstHead->u.entry.row; i < node->u.entry.row; i++) {
-
-			for (firstTemp = firstHead->right; firstTemp != firstHead; firstTemp = firstTemp->right) {
-				temp = newNode();
-				temp->tag = entry;
-				temp->u.entry.row = firstTemp->u.entry.row;
-				temp->u.entry.col = firstTemp->u.entry.col;
-				temp->u.entry.value = firstTemp->u.entry.value;
-				last->right = temp;
-				last = temp;
-				hdnode[temp->u.entry.col]->u.next->down = temp;
-				hdnode[temp->u.entry.col]->u.next = temp;
-			}
-			firstHead = firstHead->u.next;
-			last->right = hdnode[row];
-			last = hdnode[row];
-		}
-	}
-	if (secondHead != b) {
-		for (i = secondHead->u.entry.row; i < node->u.entry.row; i++) {
-
-			for (secondTemp = secondHead->right; secondTemp != secondHead; secondTemp = secondTemp->right) {
-				temp = newNode();
-				temp->tag = entry;
-				temp->u.entry.row = secondTemp->u.entry.row;
-				temp->u.entry.col = secondTemp->u.entry.col;
-				temp->u.entry.value = secondTemp->u.entry.value;
-				last->right = temp;
-				last = temp;
-				hdnode[temp->u.entry.col]->u.next->down = temp;
-				hdnode[temp->u.entry.col]->u.next = temp;
-			}
-			secondHead = secondHead->u.next;
-			last->right = hdnode[row];
-			last = hdnode[row];
-		}
-	}
 
 	for (i = 0; i < numCols; i++)
 		hdnode[i]->u.next->down = hdnode[i];
@@ -322,7 +281,7 @@ void mmult(matrixPointer a, matrixPointer b, int pos) {
 	}
 
 	int numRows, numCols, numHeads, i;
-	int row, col, value, currentRow;
+	int row, col, value;
 	matrixPointer temp, last, node;
 	matrixPointer firstHead = a->right, secondHead = b->right;
 	matrixPointer firstTemp, secondTemp;
@@ -342,16 +301,13 @@ void mmult(matrixPointer a, matrixPointer b, int pos) {
 		hdnode[i]->right = temp;
 		hdnode[i]->u.next = temp;
 	}
-	currentRow = 0;
 	last = hdnode[0];
 	firstTemp = firstHead->right;
 	secondTemp = secondHead->right;
 	for (int j = 0; j < numRows; j++) {
 		last = hdnode[j];
-		if (firstTemp->tag == head)
-			firstTemp = firstHead->right;
-		if (secondTemp->tag == head)
-			secondTemp = secondHead->down;
+		firstTemp = firstHead->right;
+		secondTemp = secondHead->down;
 		for (i = 0; i < numCols; i++) {
 			value = 0;
 			while (firstTemp != firstHead && secondTemp != secondHead) {

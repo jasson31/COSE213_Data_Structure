@@ -1,4 +1,4 @@
 ﻿  source.c
 c:\users\jasso.jasson31\source\repos\cose213-01\hw2\hw2\source.c(119): warning C4101: 'numHeads' :참조되지 않은 지역 변수입니다.
-c:\users\jasso.jasson31\source\repos\cose213-01\hw2\hw2\source.c(539): warning C4013: 'getch'이(가) 정의되지 않았습니다. extern은 int형을 반환하는 것으로 간주합니다.
+c:\users\jasso.jasson31\source\repos\cose213-01\hw2\hw2\source.c(495): warning C4013: 'getch'이(가) 정의되지 않았습니다. extern은 int형을 반환하는 것으로 간주합니다.
   hw2.vcxproj -> C:\Users\jasso.JASSON31\source\repos\COSE213-01\hw2\Debug\hw2.exe
