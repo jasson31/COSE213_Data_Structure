@@ -390,9 +390,7 @@ void mmult(matrixPointer a, matrixPointer b, int pos) {
 		//At the end of the row of the result matrix, move the head node of the first matrix to the next row and the head node of the second matrix to the first column.
 		firstHead = firstHead->u.next;
 		secondHead = b->right;
-		firstTemp = firstHead->right;
-		secondTemp = secondHead->down;
-		last->right = hdnode[row];
+		last->right = hdnode[j];
 	}
 	//Connect each head nodes to the down of bottom nodes by column.
 	for (i = 0; i < numCols; i++)
