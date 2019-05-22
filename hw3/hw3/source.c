@@ -1,12 +1,22 @@
 #include <stdio.h>
 
-#define TRUE 1
-#define FALSE 0
 #define MAX_VERTICES 100
 #define MAX_ELEMENT 100
 
 int parentSet[MAX_VERTICES];
 int countSet[MAX_VERTICES];
+
+typedef struct Edge {
+	int cost;
+	int right;
+	int left;
+} Edge;
+
+typedef struct Graph {
+	Edge edgeHeap[MAX_ELEMENT];
+	int heapSize;
+	int nodeCount;
+} Graph;
 
 void initSet(int n) {
 	int i;
@@ -37,23 +47,13 @@ void uniteSet(int set1, int set2) {
 	}
 }
 
-typedef struct Edge {
-	int cost;
-	int right;
-	int left;
-} Edge;
-
-typedef struct Graph {
-	Edge edgeHeap[MAX_ELEMENT];
-	int heapSize;
-} Graph;
 
 void initGraph(Graph *g) {
 	g->heapSize = 0;
 }
 
 int isEmpty(Graph g) {
-	return g.heapSize == 0 ? TRUE : FALSE;
+	return g.heapSize == 0 ? 1 : 0;
 }
 
 void pushEdgeHeap(Graph *g, Edge edge) {
@@ -89,32 +89,17 @@ void addNewEdge(Graph *g, int left, int right, int cost) {
 	pushEdgeHeap(g, e);
 }
 
-void insert_all_edges(Graph *g) {
-	addNewEdge(g, 0, 1, 29);
-	addNewEdge(g, 1, 2, 16);
-	addNewEdge(g, 2, 3, 12);
-	addNewEdge(g, 3, 4, 22);
-	addNewEdge(g, 4, 5, 27);
-	addNewEdge(g, 5, 0, 10);
-	addNewEdge(g, 6, 1, 15);
-	addNewEdge(g, 6, 3, 18);
-	addNewEdge(g, 6, 4, 25);
-}
-
-void kruskal(int n) {
+void kruskal(Graph *g) {
 	int acceptedEdge = 0;
-	Graph g;
 	int leftSet, rightSet;
 	Edge e;
-	initGraph(&g);
-	insert_all_edges(&g);
-	initSet(n);
-	while (acceptedEdge < (n - 1)) {
-		e = popEdgeHeap(&g);
+	initSet(g->nodeCount);
+	while (acceptedEdge < (g->nodeCount - 1)) {
+		e = popEdgeHeap(g);
 		leftSet = findSet(e.left);
 		rightSet = findSet(e.right);
 		if (leftSet != rightSet) {
-			printf("(%d, %d) %d \n", e.left, e.right, e.cost);
+			printf("  (%d, %d) %d \n", e.left, e.right, e.cost);
 			acceptedEdge++;
 			uniteSet(leftSet, rightSet);
 		}
@@ -124,11 +109,24 @@ void kruskal(int n) {
 
 void main()
 {
+	int nodeCount, edgeCount;
+	int leftNode, rightNode, edgeCost;
+	Graph g;
 	printf("*COSE213 Assignment #3\n*2018320192 컴퓨터학과 손재민\n\n");
-	/*while (1) {
-		printf("**Kruskal's algorithm program\n");
-		printf("*Type the menu.\n");
-
-	}*/
-	kruskal(7);
+	printf("**Kruskal's algorithm program\n");
+	printf("*Type the number of nodes in the graph : ");
+	scanf("%d", &nodeCount);
+	initGraph(&g);
+	g.nodeCount = nodeCount;
+	printf("*Type the number of edges in the graph : ");
+	scanf("%d", &edgeCount);
+	getchar();
+	for (int i = 0; i < edgeCount; i++) {
+		printf(" Type the edge in the form of (node node cost) : ");
+		scanf("%d %d %d", &leftNode, &rightNode, &edgeCost);
+		addNewEdge(&g, leftNode, rightNode, edgeCost);
+		getchar();
+	}
+	printf("\n**Result\n");
+	kruskal(&g);
 }
