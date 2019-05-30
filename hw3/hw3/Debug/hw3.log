@@ -1,4 +1,5 @@
 ﻿  source.c
-c:\users\jasso.jasson31\source\repos\cose213-01\hw3\hw3\source.c(96): warning C4013: 'malloc'이(가) 정의되지 않았습니다. extern은 int형을 반환하는 것으로 간주합니다.
-c:\users\jasso.jasson31\source\repos\cose213-01\hw3\hw3\source.c(96): warning C4047: '초기화 중': 'Edge *'의 간접 참조 수준이 'int'과(와) 다릅니다.
+c:\users\jasso.jasson31\source\repos\cose213-01\hw3\hw3\source.c(105): warning C4013: 'malloc'이(가) 정의되지 않았습니다. extern은 int형을 반환하는 것으로 간주합니다.
+c:\users\jasso.jasson31\source\repos\cose213-01\hw3\hw3\source.c(112): warning C4013: 'free'이(가) 정의되지 않았습니다. extern은 int형을 반환하는 것으로 간주합니다.
+c:\users\jasso.jasson31\source\repos\cose213-01\hw3\hw3\source.c(105): warning C4047: '초기화 중': 'Edge *'의 간접 참조 수준이 'int'과(와) 다릅니다.
   hw3.vcxproj -> C:\Users\jasso.JASSON31\source\repos\COSE213-01\hw3\Debug\hw3.exe

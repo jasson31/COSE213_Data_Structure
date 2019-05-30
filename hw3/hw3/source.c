@@ -109,6 +109,7 @@ void kruskal(Graph *g) {
 		//If there are no more edges when accepted edges are insufficient, it means there is no spanning tree.
 		if (g->heapSize == 0) {
 			printf("**There is no spanning tree for this graph.\n");
+			free(acceptedEdges);
 			return;
 		}
 		e = popEdgeHeap(g);
@@ -121,9 +122,16 @@ void kruskal(Graph *g) {
 			uniteSet(leftSet, rightSet);
 		}
 	}
+
+	int totalCost = 0;
+	printf("\n**The spanning tree of the graph\n");
 	//Print all edges accepted to the spanning tree.
-	for(int i = 0 ; i < acceptedEdge; i++)
+	for (int i = 0; i < acceptedEdge; i++) {
 		printf("  (%d, %d) %d \n", acceptedEdges[i].left, acceptedEdges[i].right, acceptedEdges[i].cost);
+		totalCost += acceptedEdges[i].cost;
+	}
+	printf("  The cost of the spanning tree : %d\n", totalCost);
+	free(acceptedEdges);
 }
 
 void main()
@@ -146,6 +154,6 @@ void main()
 		addNewEdge(&g, leftNode, rightNode, edgeCost);
 		getchar();
 	}
-	printf("\n**The spanning tree of the graph\n");
+	//Start kruskal algorithm.
 	kruskal(&g);
 }
